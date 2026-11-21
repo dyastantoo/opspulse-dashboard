@@ -1,0 +1,40 @@
+# OpsPulse – editor configuration
+# https://editorconfig.org
+
+# Top-level config — applies to all files unless overridden below
+root = true
+
+[*]
+charset             = utf-8
+end_of_line         = lf
+indent_style        = space
+indent_size         = 2
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# HTML files
+[*.html]
+indent_size = 2
+max_line_length = 120
+
+# CSS files
+[*.css]
+indent_size = 2
+max_line_length = 120
+
+# Markdown — preserve trailing spaces (they create line breaks in MD)
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# JSON / YAML (config files, if added later)
+[*.{json,yaml,yml}]
+indent_size = 2
+
+# Plain text and robots.txt
+[*.txt]
+indent_size = 2
+
+# .gitignore and similar dot files
+[.gitignore,.editorconfig,.env*]
+indent_size = 2

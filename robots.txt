@@ -1,0 +1,9 @@
+# robots.txt – OpsPulse System Health Command Center
+# Allow all crawlers to index the dashboard
+
+User-agent: *
+Allow: /
+
+# Disallow access to any future admin or API paths
+Disallow: /api/
+Disallow: /admin/
