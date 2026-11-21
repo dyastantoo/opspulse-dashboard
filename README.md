@@ -6,13 +6,7 @@
 
 ## Screenshot
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  [Screenshot placeholder – open index.html in a browser to preview] │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-> To capture a real screenshot, open `index.html` in Chrome, press **F12 → Ctrl+Shift+P → "Capture full size screenshot"**, and save the image as `screenshot.png` in the project root.
+![OpsPulse Dashboard](screenshot.png)
 
 ---
 
