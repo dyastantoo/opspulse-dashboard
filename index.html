@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Character encoding & viewport -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Primary metadata -->
+  <title>OpsPulse – System Health Command Center</title>
+  <meta name="description" content="OpsPulse is a real-time System Health Command Center for IT operations teams — monitor service uptime, incident alerts, response times, and resource usage from one dashboard." />
+  <meta name="author" content="OpsPulse Operations Team" />
+
+  <!-- Theme color for mobile browser chrome -->
+  <meta name="theme-color" content="#0B1220" />
+
+  <!-- Inline SVG favicon as a data URI (suppresses 404 request) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230B1220'/%3E%3Ccircle cx='16' cy='16' r='13' stroke='%2322D3EE' stroke-width='2.5' fill='none'/%3E%3Cpolyline points='7,19 11,13 15,17 19,10 23,14' stroke='%2322D3EE' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+  <!-- Open Graph (social sharing previews) -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="OpsPulse – System Health Command Center" />
+  <meta property="og:description" content="Monitor service uptime, incident alerts, response times, and resource usage for your IT operations team — all in one dark-theme dashboard." />
+  <meta property="og:site_name"   content="OpsPulse" />
+  <meta property="og:locale"      content="en_US" />
+
+  <!-- Twitter Card (text-only, no external image) -->
+  <meta name="twitter:card"        content="summary" />
+  <meta name="twitter:title"       content="OpsPulse – System Health Command Center" />
+  <meta name="twitter:description" content="Monitor service uptime, incident alerts, response times, and resource usage for your IT operations team — all in one dark-theme dashboard." />
+
+  <!-- Security headers -->
+  <!-- CSP: restricts resource origins — style-src 'self' allows only style.css;
+       img-src allows data: URIs (favicon); everything else blocked by default-src 'none'.
+       Limitation: a meta CSP cannot block or restrict navigation-initiated requests
+       (e.g. form-action is advisory only here), and it is processed after the HTML parser
+       begins — unlike an HTTP header which is enforced before any resource is fetched. -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'" />
+  <meta name="referrer" content="no-referrer" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Skip-to-content link (H-1): first focusable element, visually hidden until focused -->
+  <a href="#overview" class="skip-link">Skip to main content</a>
+
+  <!-- ===== MOBILE HEADER (visible < 1024px) ===== -->
+  <!-- C-1: role="banner" removed — only the topbar <header> is the page banner landmark -->
+  <header class="mobile-header">
+    <span class="logo" aria-label="OpsPulse">
+      <!-- H-5: stroke="var(--primary)" → currentColor; parent .logo has color:var(--primary) -->
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <circle cx="11" cy="11" r="10" stroke="currentColor" stroke-width="2"/>
+        <polyline points="5,13 8,9 11,12 14,7 17,10" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      OpsPulse
+    </span>
+    <label class="hamburger-label" for="nav-toggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </label>
+  </header>
+
+  <!-- ===== SIDEBAR NAVIGATION ===== -->
+  <!-- H-2: tabindex="-1" added so the hidden checkbox is never keyboard-reachable -->
+  <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-hidden="true" tabindex="-1" />
+  <nav class="sidebar" aria-label="Main navigation">
+    <div class="sidebar-logo" aria-label="OpsPulse">
+      <!-- H-5: .sidebar-logo has color:var(--primary) -->
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="2"/>
+        <polyline points="5,14 8,9 12,13 16,7 19,11" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>OpsPulse</span>
+    </div>
+    <ul class="sidebar-nav" role="list">
+      <li>
+        <a href="#overview" class="nav-link active" aria-current="page">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/>
+            <rect x="11" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/>
+            <rect x="1" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/>
+            <rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.6"/>
+          </svg>
+          Overview
+        </a>
+      </li>
+      <li>
+        <a href="#services" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <rect x="2" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M6 4V3a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.6"/>
+          </svg>
+          Services
+        </a>
+      </li>
+      <li>
+        <a href="#incidents" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M9 2L2 15h14L9 2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <line x1="9" y1="8" x2="9" y2="11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="9" cy="13.5" r="0.8" fill="currentColor"/>
+          </svg>
+          Incidents
+        </a>
+      </li>
+      <li>
+        <a href="#resources" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <rect x="2" y="10" width="3" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/>
+            <rect x="7.5" y="6" width="3" height="10" rx="1" stroke="currentColor" stroke-width="1.6"/>
+            <rect x="13" y="2" width="3" height="14" rx="1" stroke="currentColor" stroke-width="1.6"/>
+          </svg>
+          Resources
+        </a>
+      </li>
+      <li>
+        <a href="#reports" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <rect x="3" y="2" width="12" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/>
+            <line x1="6" y1="6" x2="12" y2="6" stroke="currentColor" stroke-width="1.4"/>
+            <line x1="6" y1="9" x2="12" y2="9" stroke="currentColor" stroke-width="1.4"/>
+            <line x1="6" y1="12" x2="10" y2="12" stroke="currentColor" stroke-width="1.4"/>
+          </svg>
+          Reports
+        </a>
+      </li>
+      <li>
+        <a href="#settings" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <circle cx="9" cy="9" r="2.5" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M9 1v2M9 15v2M1 9h2M15 9h2M3.22 3.22l1.42 1.42M13.36 13.36l1.42 1.42M3.22 14.78l1.42-1.42M13.36 4.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Settings
+        </a>
+      </li>
+    </ul>
+    <div class="sidebar-footer">
+      <span class="version-tag">v2.4.1</span>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN WRAPPER ===== -->
+  <div class="main-wrapper">
+
+    <!-- ===== TOP NAVIGATION BAR ===== -->
+    <header class="topbar" role="banner">
+      <div class="topbar-left">
+        <h1 class="page-title">System Overview</h1>
+        <div class="search-wrap">
+          <label for="search-input" class="sr-only">Search services or incidents</label>
+          <!-- H-5: stroke="var(--muted)" → stroke="currentColor"; color set via CSS on .search-icon -->
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+            <line x1="10" y1="10" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <!-- H-3: redundant aria-label removed — the <label> above is sufficient -->
+          <input id="search-input" type="search" class="search-input" placeholder="Search services, incidents…" />
+        </div>
+      </div>
+      <div class="topbar-right">
+        <!-- Time range selector -->
+        <!-- C-3: aria-pressed removed — state cannot update without JS and was misleading -->
+        <div class="time-range" role="group" aria-label="Time range">
+          <button class="tr-btn active" type="button">24h</button>
+          <button class="tr-btn" type="button">7d</button>
+          <button class="tr-btn" type="button">30d</button>
+        </div>
+        <!-- Notification bell -->
+        <!-- H-5: .icon-btn inherits color:var(--text) from body -->
+        <button class="icon-btn" type="button" aria-label="Notifications – 3 unread">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M10 2a6 6 0 00-6 6v3l-1.5 2h15L16 11V8a6 6 0 00-6-6z" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M8 16a2 2 0 004 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <span class="badge" aria-label="3 notifications">3</span>
+        </button>
+        <!-- User avatar -->
+        <div class="avatar" aria-label="Rina Pratama – Site Reliability Engineer">RP</div>
+      </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="content" id="overview" aria-label="Dashboard content">
+
+      <!-- === ROW 1: KPI CARDS === -->
+      <section class="kpi-row" aria-label="Key performance indicators">
+
+        <!-- KPI: Uptime -->
+        <article class="kpi-card" aria-label="Uptime">
+          <div class="kpi-header">
+            <span class="kpi-label">Uptime</span>
+            <!-- H-4: aria-hidden="true" added to SVG inside already-hidden parent -->
+            <span class="kpi-icon kpi-icon--success" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.6"/>
+                <polyline points="6,10 9,13 14,7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+          <div class="kpi-value">99.94<span class="kpi-unit">%</span></div>
+          <div class="kpi-delta kpi-delta--up" aria-label="Up 0.02% from previous period">
+            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><polyline points="2,9 6,3 10,9" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+            +0.02%
+          </div>
+        </article>
+
+        <!-- KPI: Avg Response Time -->
+        <article class="kpi-card" aria-label="Average response time">
+          <div class="kpi-header">
+            <span class="kpi-label">Avg Response Time</span>
+            <!-- H-4: aria-hidden="true" added -->
+            <span class="kpi-icon kpi-icon--primary" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.6"/>
+                <polyline points="10,5 10,10 13,13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+          <div class="kpi-value">182<span class="kpi-unit">ms</span></div>
+          <div class="kpi-delta kpi-delta--down-good" aria-label="Down 12 ms from previous period (improvement)">
+            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><polyline points="2,3 6,9 10,3" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+            −12 ms
+          </div>
+        </article>
+
+        <!-- KPI: Error Rate -->
+        <article class="kpi-card" aria-label="Error rate">
+          <div class="kpi-header">
+            <span class="kpi-label">Error Rate</span>
+            <!-- H-4: aria-hidden="true" added -->
+            <span class="kpi-icon kpi-icon--danger" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.6"/>
+                <line x1="7" y1="7" x2="13" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <line x1="13" y1="7" x2="7" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+          </div>
+          <div class="kpi-value">0.42<span class="kpi-unit">%</span></div>
+          <div class="kpi-delta kpi-delta--up-bad" aria-label="Up 0.05% from previous period (degradation)">
+            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><polyline points="2,9 6,3 10,9" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+            +0.05%
+          </div>
+        </article>
+
+        <!-- KPI: Open Incidents -->
+        <article class="kpi-card" aria-label="Open incidents">
+          <div class="kpi-header">
+            <span class="kpi-label">Open Incidents</span>
+            <!-- H-4: aria-hidden="true" added -->
+            <span class="kpi-icon kpi-icon--accent" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M10 3L2 16h16L10 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                <line x1="10" y1="9" x2="10" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="10" cy="14.5" r="0.9" fill="currentColor"/>
+              </svg>
+            </span>
+          </div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-delta kpi-delta--neutral" aria-label="1 critical incident">
+            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.6" fill="none"/><line x1="6" y1="4" x2="6" y2="7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="6" cy="8.5" r="0.7" fill="currentColor"/></svg>
+            1 critical
+          </div>
+        </article>
+
+      </section>
+
+      <!-- === ROW 2: TREND CHART + SERVICE GRID === -->
+      <div class="row2-grid">
+
+        <!-- === RESPONSE TIME TREND (pure CSS bar chart) === -->
+        <section class="card chart-card" aria-label="Response time trend – last 12 hours" id="reports">
+          <h2 class="card-title">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" class="icon-primary"><polyline points="1,13 4,8 7,10 10,4 13,7 15,3" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Response Time Trend
+          </h2>
+          <p class="card-subtitle">Last 12 hours · ms</p>
+          <div class="chart-wrap" role="img" aria-label="Bar chart showing response time over last 12 hours">
+            <div class="chart-y-axis" aria-hidden="true">
+              <span>400</span>
+              <span>300</span>
+              <span>200</span>
+              <span>100</span>
+              <span>0</span>
+            </div>
+            <div class="chart-bars">
+              <!-- 12 bars: heights via .bh-* classes (no inline styles) -->
+              <div class="bar-wrap">
+                <div class="bar bh-52" aria-label="00:00 – 208ms">
+                  <span class="bar-tooltip">208 ms</span>
+                </div>
+                <span class="bar-label">00</span>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar bh-45" aria-label="02:00 – 180ms">
+                  <span class="bar-tooltip">180 ms</span>
+                </div>
+                <span class="bar-label">02</span>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar bar--accent bh-68" aria-label="04:00 – 272ms">
+                  <span class="bar-tooltip">272 ms</span>
+                </div>
+                <span class="bar-label">04</span>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar bh-55" aria-label="06:00 – 220ms">
+                  <span class="bar-tooltip">220 ms</span>
+                </div>
+                <span class="bar-label">06</span>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar bh-40" aria-label="07:00 – 160ms">
+                  <span class="bar-tooltip">160 ms</span>
+                </div>
+                <span class="bar-label">07</span>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar bar--danger bh-85" aria-label="08:00 – 340ms">
+                  <span class="bar-tooltip">340 ms</span>
+                </div>
+                <span class="bar-label">08</span>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar bar--accent bh-72" aria-label="09:00 – 288ms">
+                  <span class="bar-tooltip">288 ms</span>
+                </div>
+                <span class="bar-label">09</span>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar bh-48" aria-label="10:00 – 192ms">
+                  <span class="bar-tooltip">192 ms</span>
+                </div>
+                <span class="bar-label">10</span>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar bh-42" aria-label="11:00 – 168ms">
+                  <span class="bar-tooltip">168 ms</span>
+                </div>
+                <span class="bar-label">11</span>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar bh-46" aria-label="12:00 – 184ms">
+                  <span class="bar-tooltip">184 ms</span>
+                </div>
+                <span class="bar-label">12</span>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar bar--accent bh-63" aria-label="13:00 – 252ms">
+                  <span class="bar-tooltip">252 ms</span>
+                </div>
+                <span class="bar-label">13</span>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar bh-44" aria-label="14:00 – 176ms">
+                  <span class="bar-tooltip">176 ms</span>
+                </div>
+                <span class="bar-label">14</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- === SERVICE STATUS GRID === -->
+        <section class="card service-card" aria-label="Service status" id="services">
+          <h2 class="card-title">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" class="icon-primary"><rect x="1" y="4" width="14" height="8" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.6"/></svg>
+            Service Status
+          </h2>
+          <p class="card-subtitle">8 services monitored</p>
+          <div class="service-grid">
+
+            <article class="service-item" aria-label="Web Portal – Operational">
+              <div class="service-name">Web Portal</div>
+              <span class="status-badge status--operational">Operational</span>
+              <div class="service-meta"><span>99.98%</span><span>142 ms</span></div>
+            </article>
+
+            <article class="service-item" aria-label="API Gateway – Operational">
+              <div class="service-name">API Gateway</div>
+              <span class="status-badge status--operational">Operational</span>
+              <div class="service-meta"><span>99.95%</span><span>168 ms</span></div>
+            </article>
+
+            <article class="service-item" aria-label="Auth Service – Operational">
+              <div class="service-name">Auth Service</div>
+              <span class="status-badge status--operational">Operational</span>
+              <div class="service-meta"><span>99.99%</span><span>95 ms</span></div>
+            </article>
+
+            <article class="service-item" aria-label="Database Cluster – Degraded">
+              <div class="service-name">Database Cluster</div>
+              <span class="status-badge status--degraded">Degraded</span>
+              <div class="service-meta"><span>97.41%</span><span>412 ms</span></div>
+            </article>
+
+            <article class="service-item" aria-label="Payment Service – Operational">
+              <div class="service-name">Payment Service</div>
+              <span class="status-badge status--operational">Operational</span>
+              <div class="service-meta"><span>99.91%</span><span>203 ms</span></div>
+            </article>
+
+            <article class="service-item" aria-label="Notification Service – Degraded">
+              <div class="service-name">Notification Service</div>
+              <span class="status-badge status--degraded">Degraded</span>
+              <div class="service-meta"><span>95.60%</span><span>580 ms</span></div>
+            </article>
+
+            <article class="service-item" aria-label="File Storage – Operational">
+              <div class="service-name">File Storage</div>
+              <span class="status-badge status--operational">Operational</span>
+              <div class="service-meta"><span>99.87%</span><span>117 ms</span></div>
+            </article>
+
+            <article class="service-item" aria-label="Reporting Engine – Down">
+              <div class="service-name">Reporting Engine</div>
+              <span class="status-badge status--down">Down</span>
+              <div class="service-meta"><span>82.30%</span><span>— ms</span></div>
+            </article>
+
+          </div>
+        </section>
+
+      </div><!-- end row2-grid -->
+
+      <!-- === ROW 3: BOTTOM COLUMNS === -->
+      <div class="row3-grid">
+
+        <!-- === INCIDENT ALERTS === -->
+        <!--
+          CSS-only filtering:
+          Hidden radio inputs sit inside the section so their :checked state
+          can reach sibling .incident-list via the general sibling combinator (~).
+          Each incident carries a data-sev attribute; filter rules hide items
+          whose data-sev does not match the checked radio's value.
+        -->
+        <section class="card incident-card" aria-label="Incident alerts" id="incidents">
+          <h2 class="card-title">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" class="icon-accent"><path d="M8 2L1 14h14L8 2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><line x1="8" y1="7" x2="8" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="12" r="0.8" fill="currentColor"/></svg>
+            Incident Alerts
+          </h2>
+
+          <!-- Hidden radio inputs (CSS-only filter state) -->
+          <input type="radio" name="inc-filter" id="inc-all"      class="inc-radio" value="all"      checked />
+          <input type="radio" name="inc-filter" id="inc-critical" class="inc-radio" value="critical" />
+          <input type="radio" name="inc-filter" id="inc-high"     class="inc-radio" value="high"     />
+          <input type="radio" name="inc-filter" id="inc-medium"   class="inc-radio" value="medium"   />
+          <input type="radio" name="inc-filter" id="inc-low"      class="inc-radio" value="low"      />
+
+          <!-- C-2: role="tablist"/"tab" removed (invalid on label elements, requires JS for aria-selected).
+               Replaced with role="group" on the container; labels need no ARIA role. -->
+          <div class="inc-tabs" role="group" aria-label="Filter incidents by severity">
+            <label for="inc-all"      class="inc-tab">All <span class="inc-count">(8)</span></label>
+            <label for="inc-critical" class="inc-tab inc-tab--critical">Critical <span class="inc-count">(2)</span></label>
+            <label for="inc-high"     class="inc-tab inc-tab--high">High <span class="inc-count">(2)</span></label>
+            <label for="inc-medium"   class="inc-tab inc-tab--medium">Medium <span class="inc-count">(2)</span></label>
+            <label for="inc-low"      class="inc-tab inc-tab--low">Low <span class="inc-count">(2)</span></label>
+          </div>
+
+          <!-- Incident list — each item tagged with data-sev for CSS filtering -->
+          <ul class="incident-list" role="list">
+
+            <li class="incident-item" data-sev="critical" aria-label="Critical: Reporting Engine total outage">
+              <span class="sev-tag sev--critical">Critical</span>
+              <div class="incident-body">
+                <p class="incident-title">Reporting Engine total outage</p>
+                <p class="incident-meta">Reporting Engine · <time datetime="2026-11-21T03:40:00Z">24 min ago</time></p>
+              </div>
+            </li>
+
+            <li class="incident-item" data-sev="critical" aria-label="Critical: Payment Service transaction failures">
+              <span class="sev-tag sev--critical">Critical</span>
+              <div class="incident-body">
+                <p class="incident-title">Payment Service transaction failures spike</p>
+                <p class="incident-meta">Payment Service · <time datetime="2026-11-21T03:50:00Z">13 min ago</time></p>
+              </div>
+            </li>
+
+            <li class="incident-item" data-sev="high" aria-label="High: Database Cluster high query latency">
+              <span class="sev-tag sev--high">High</span>
+              <div class="incident-body">
+                <p class="incident-title">Database Cluster high query latency</p>
+                <p class="incident-meta">Database Cluster · <time datetime="2026-11-21T03:15:00Z">58 min ago</time></p>
+              </div>
+            </li>
+
+            <li class="incident-item" data-sev="high" aria-label="High: Notification Service delivery delays">
+              <span class="sev-tag sev--high">High</span>
+              <div class="incident-body">
+                <p class="incident-title">Notification Service delivery delays</p>
+                <p class="incident-meta">Notification Service · <time datetime="2026-11-21T02:50:00Z">1 h 23 min ago</time></p>
+              </div>
+            </li>
+
+            <li class="incident-item" data-sev="medium" aria-label="Medium: Elevated error rate on API Gateway">
+              <span class="sev-tag sev--medium">Medium</span>
+              <div class="incident-body">
+                <p class="incident-title">Elevated error rate on API Gateway</p>
+                <p class="incident-meta">API Gateway · <time datetime="2026-11-21T01:30:00Z">2 h 44 min ago</time></p>
+              </div>
+            </li>
+
+            <li class="incident-item" data-sev="medium" aria-label="Medium: Auth Service elevated login failures">
+              <span class="sev-tag sev--medium">Medium</span>
+              <div class="incident-body">
+                <p class="incident-title">Auth Service elevated login failures</p>
+                <p class="incident-meta">Auth Service · <time datetime="2026-11-21T00:45:00Z">3 h 29 min ago</time></p>
+              </div>
+            </li>
+
+            <li class="incident-item" data-sev="low" aria-label="Low: SSL certificate expiry in 14 days">
+              <span class="sev-tag sev--low">Low</span>
+              <div class="incident-body">
+                <p class="incident-title">SSL certificate expiry in 14 days</p>
+                <p class="incident-meta">Web Portal · <time datetime="2026-11-20T18:00:00Z">10 h ago</time></p>
+              </div>
+            </li>
+
+            <li class="incident-item" data-sev="low" aria-label="Low: File Storage disk usage warning at 51%">
+              <span class="sev-tag sev--low">Low</span>
+              <div class="incident-body">
+                <p class="incident-title">File Storage disk usage crossed 50% threshold</p>
+                <p class="incident-meta">File Storage · <time datetime="2026-11-20T16:30:00Z">11 h 43 min ago</time></p>
+              </div>
+            </li>
+
+          </ul>
+        </section>
+
+        <!-- === RESOURCE USAGE === -->
+        <section class="card resource-card" aria-label="Resource usage" id="resources">
+          <h2 class="card-title">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" class="icon-primary"><rect x="1" y="9" width="3" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="6.5" y="5" width="3" height="10" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="12" y="1" width="3" height="14" rx="1" stroke="currentColor" stroke-width="1.6"/></svg>
+            Resource Usage
+          </h2>
+
+          <div class="resource-list">
+
+            <div class="resource-item" aria-label="CPU usage 68%">
+              <div class="resource-header">
+                <span class="resource-label">CPU</span>
+                <span class="resource-pct">68%</span>
+              </div>
+              <div class="progress-track" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100" aria-label="CPU 68%">
+                <div class="progress-fill progress--amber pct-68"></div>
+              </div>
+            </div>
+
+            <div class="resource-item" aria-label="Memory usage 74%">
+              <div class="resource-header">
+                <span class="resource-label">Memory</span>
+                <span class="resource-pct">74%</span>
+              </div>
+              <div class="progress-track" role="progressbar" aria-valuenow="74" aria-valuemin="0" aria-valuemax="100" aria-label="Memory 74%">
+                <div class="progress-fill progress--amber pct-74"></div>
+              </div>
+            </div>
+
+            <div class="resource-item" aria-label="Disk usage 51%">
+              <div class="resource-header">
+                <span class="resource-label">Disk</span>
+                <span class="resource-pct">51%</span>
+              </div>
+              <div class="progress-track" role="progressbar" aria-valuenow="51" aria-valuemin="0" aria-valuemax="100" aria-label="Disk 51%">
+                <div class="progress-fill progress--green pct-51"></div>
+              </div>
+            </div>
+
+            <div class="resource-item" aria-label="Network usage 39%">
+              <div class="resource-header">
+                <span class="resource-label">Network</span>
+                <span class="resource-pct">39%</span>
+              </div>
+              <div class="progress-track" role="progressbar" aria-valuenow="39" aria-valuemin="0" aria-valuemax="100" aria-label="Network 39%">
+                <div class="progress-fill progress--green pct-39"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Threshold legend -->
+          <div class="threshold-legend" aria-label="Threshold key">
+            <span class="legend-dot legend-dot--green"></span><span>Normal &lt;60%</span>
+            <span class="legend-dot legend-dot--amber"></span><span>Warning 60–80%</span>
+            <span class="legend-dot legend-dot--red"></span><span>Critical &gt;80%</span>
+          </div>
+        </section>
+
+        <!-- === RECENT ACTIVITY LOG === -->
+        <section class="card activity-card" aria-label="Recent activity log">
+          <h2 class="card-title">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" class="icon-primary"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.6"/><polyline points="8,4 8,8 11,10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Recent Activity
+          </h2>
+          <!-- H-6: role="list" removed — <ol> already has implicit ordered-list semantics -->
+          <ol class="activity-timeline" aria-label="Activity timeline">
+
+            <li class="activity-item">
+              <span class="timeline-dot dot--primary" aria-hidden="true"></span>
+              <div class="activity-body">
+                <p class="activity-title">Deployment: web-portal v3.12.0</p>
+                <p class="activity-meta">Web Portal · <time datetime="2026-11-21T03:55:00Z">18 min ago</time></p>
+              </div>
+            </li>
+
+            <li class="activity-item">
+              <span class="timeline-dot dot--success" aria-hidden="true"></span>
+              <div class="activity-body">
+                <p class="activity-title">Service restart: notification-worker</p>
+                <p class="activity-meta">Notification Service · <time datetime="2026-11-21T03:30:00Z">43 min ago</time></p>
+              </div>
+            </li>
+
+            <li class="activity-item">
+              <span class="timeline-dot dot--accent" aria-hidden="true"></span>
+              <div class="activity-body">
+                <p class="activity-title">Config change: DB connection pool +10</p>
+                <p class="activity-meta">Database Cluster · <time datetime="2026-11-21T02:45:00Z">1 h 28 min ago</time></p>
+              </div>
+            </li>
+
+            <li class="activity-item">
+              <span class="timeline-dot dot--success" aria-hidden="true"></span>
+              <div class="activity-body">
+                <p class="activity-title">Alert acknowledged: high latency DB</p>
+                <p class="activity-meta">Database Cluster · <time datetime="2026-11-21T02:00:00Z">2 h 13 min ago</time></p>
+              </div>
+            </li>
+
+            <li class="activity-item">
+              <span class="timeline-dot dot--muted" aria-hidden="true"></span>
+              <div class="activity-body">
+                <p class="activity-title">Backup completed: file-storage-vol-02</p>
+                <p class="activity-meta">File Storage · <time datetime="2026-11-21T00:00:00Z">4 h ago</time></p>
+              </div>
+            </li>
+
+            <li class="activity-item">
+              <span class="timeline-dot dot--primary" aria-hidden="true"></span>
+              <div class="activity-body">
+                <p class="activity-title">Auto-scaling event: api-gateway +2 nodes</p>
+                <p class="activity-meta">API Gateway · <time datetime="2026-11-20T22:00:00Z">6 h ago</time></p>
+              </div>
+            </li>
+
+          </ol>
+        </section>
+
+      </div><!-- end row3-grid -->
+
+    </main><!-- end content -->
+
+    <!-- ===== ON-CALL PROFILE CARD (RIGHT ASIDE) ===== -->
+    <aside class="oncall-aside" aria-label="On-call engineer">
+      <section class="card oncall-card">
+        <h2 class="card-title">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" class="icon-primary"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M2 14c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          On-Call Engineer
+        </h2>
+        <div class="oncall-avatar" aria-hidden="true">RP</div>
+        <p class="oncall-name">Rina Pratama</p>
+        <p class="oncall-role">Site Reliability Engineer</p>
+        <div class="oncall-meta">
+          <div class="oncall-row">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" class="icon-muted"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.4"/><polyline points="7,3.5 7,7 9.5,8.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>08:00 – 16:00 UTC</span>
+          </div>
+          <div class="oncall-row">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="online-label">Online</span>
+          </div>
+        </div>
+        <div class="oncall-actions">
+          <button class="btn btn--primary" type="button" aria-label="Acknowledge current incidents">Acknowledge</button>
+          <button class="btn btn--outline" type="button" aria-label="Escalate to next on-call engineer">Escalate</button>
+        </div>
+      </section>
+
+      <!-- System Health Summary (bonus info block in aside) -->
+      <section class="card health-summary-card" aria-label="System health summary">
+        <h2 class="card-title">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" class="icon-success"><polyline points="1,11 4,7 7,9 10,3 13,6 15,2" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Health Summary
+        </h2>
+        <ul class="health-list" role="list">
+          <li class="health-item">
+            <span class="health-dot health-dot--success" aria-hidden="true"></span>
+            <span>5 services operational</span>
+          </li>
+          <li class="health-item">
+            <span class="health-dot health-dot--accent" aria-hidden="true"></span>
+            <span>2 services degraded</span>
+          </li>
+          <li class="health-item">
+            <span class="health-dot health-dot--danger" aria-hidden="true"></span>
+            <span>1 service down</span>
+          </li>
+          <li class="health-item">
+            <span class="health-dot health-dot--muted" aria-hidden="true"></span>
+            <span>Last checked: just now</span>
+          </li>
+        </ul>
+      </section>
+    </aside>
+
+  </div><!-- end main-wrapper -->
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer" role="contentinfo">
+    <span>OpsPulse v2.4.1 · System Health Command Center · Last refresh: <time datetime="2026-11-21T04:13:00Z">04:13 UTC</time></span>
+  </footer>
+
+</body>
+</html>
